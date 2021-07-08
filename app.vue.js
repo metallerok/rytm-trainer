@@ -78,7 +78,7 @@ const app = Vue.createApp({
         <div class="flex-row" :class="{ 'margin-top-10': r_index != 0 }" v-for="(row, r_index) in randomSixteenthBars" :key="r_index">
           <Bar v-for="(item, index) in row" :state="item" :key="index" />
         </div>
-        <div class="flex-row" :class="{ 'margin-top-10': r_index != 0 }" v-for="(row, r_index) in randomTripletBars" :key="r_index">
+        <div class="flex-row margin-top-10" :class="{ 'margin-top-10': r_index != 0 }" v-for="(row, r_index) in randomTripletBars" :key="r_index">
           <Bar v-for="(item, index) in row" :state="item" :key="index" />
         </div>
         <div class="btn margin-top-10" @click="generate">
