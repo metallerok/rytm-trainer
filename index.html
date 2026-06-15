@@ -1,16 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>rytm-trainer</title>
-  <script src="https://unpkg.com/vue@2"></script>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ритмика — отработка паттернов</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #00d2ff;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin: 30px 0 15px;
+  color: #00d2ff;
+  border-bottom: 1px solid #2a2a4e;
+  padding-bottom: 8px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #888;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* Pattern cards */
+.patterns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.pattern-card {
+  background: #16213e;
+  border: 1px solid #2a2a4e;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  transition: transform 0.15s;
+}
+
+.pattern-card:hover {
+  transform: translateY(-2px);
+  border-color: #00d2ff;
+}
+
+.pattern-cells {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.cell {
+  width: 28px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.cell.sound {
+  background: #0f4c75;
+  border: 2px solid #00d2ff;
+  color: #00d2ff;
+}
+
+.cell.rest {
+  background: #1a1a2e;
+  border: 2px solid #2a2a4e;
+  color: #555;
+}
+
+.pattern-label {
+  font-size: 0.8rem;
+  color: #888;
+  font-family: 'Courier New', monospace;
+}
+
+/* Generator section */
+.generator-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  background: #0f4c75;
+  color: #e0e0e0;
+  border: 2px solid #00d2ff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: #00d2ff;
+  color: #1a1a2e;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn.regenerate {
+  background: #1a1a2e;
+  border-color: #555;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+/* Generated output */
+.output-area {
+  background: #16213e;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.output-empty {
+  color: #555;
+  text-align: center;
+  padding: 30px;
+  font-size: 0.95rem;
+}
+
+.measure {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.measure-number {
+  color: #555;
+  font-size: 0.8rem;
+  min-width: 40px;
+}
+
+.beat-group {
+  display: flex;
+  gap: 3px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(0, 210, 255, 0.05);
+}
+
+.beat-group .cell {
+  width: 24px;
+  height: 40px;
+  font-size: 0.75rem;
+}
+
+.measure-divider {
+  width: 3px;
+  height: 50px;
+  background: #00d2ff;
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+.output-label {
+  font-size: 0.85rem;
+  color: #00d2ff;
+  margin-bottom: -8px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 1.5rem; }
+  .cell { width: 22px; height: 30px; }
+  .beat-group .cell { width: 20px; height: 34px; }
+  .measure-divider { height: 42px; }
+}
+</style>
 </head>
 <body>
-  <div id="app" />
-  <script src="bar.vue.js"></script>
-  <script src="./app.vue.js"></script>
+
+<h1>Ритмика</h1>
+<p class="subtitle">ти-ти-та-ти · отработка ритмических паттернов</p>
+
+<h2>Шестнадцатые — 4 на долю</h2>
+<div class="patterns-grid" id="sixteenths-grid"></div>
+
+<h2>Триоли — 3 на долю</h2>
+<div class="patterns-grid" id="triplets-grid"></div>
+
+<h2>Генератор — 2 такта</h2>
+<div class="generator-buttons">
+  <button class="btn" onclick="generate('sixteenths')">Случайные шестнадцатые</button>
+  <button class="btn" onclick="generate('triplets')">Случайные триоли</button>
+  <button class="btn" onclick="generate('mixed')">Шестнадцатые + триоли</button>
+</div>
+<div class="output-area" id="output">
+  <div class="output-empty">Нажмите кнопку, чтобы сгенерировать ритм</div>
+</div>
+
+<script>
+const SIXTEENTHS = [
+  'oxxx', 'ooxx', 'ooox', 'oooo',
+  'xxox', 'xxoo', 'xooo', 'xxxx',
+  'xoxx', 'xoox', 'xxxo', 'oxox',
+  'oxxo', 'oxoo', 'ooxo', 'xoxo'
+];
+
+const TRIPLETS = [
+  'oxx', 'oox', 'ooo', 'xxx',
+  'xoo', 'xxo', 'xox', 'oxo'
+];
+
+function createCells(pattern, cellClass) {
+  return pattern.split('').map(sym => {
+    const isSound = sym === 'o';
+    return `<div class="cell ${isSound ? 'sound' : 'rest'}">${sym}</div>`;
+  }).join('');
+}
+
+function renderPatternGrid(gridId, patterns) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = patterns.map(p =>
+    `<div class="pattern-card">
+      <div class="pattern-cells">${createCells(p)}</div>
+      <div class="pattern-label">${p}</div>
+    </div>`
+  ).join('');
+}
+
+function randomChoice(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generate(type) {
+  const output = document.getElementById('output');
+  const beatsPerMeasure = 4;
+  const numMeasures = 2;
+  let html = '';
+  let label = '';
+
+  if (type === 'sixteenths') {
+    label = 'Случайные шестнадцатые';
+  } else if (type === 'triplets') {
+    label = 'Случайные триоли';
+  } else {
+    label = 'Шестнадцатые + триоли';
+  }
+
+  html += `<div class="output-label">${label}</div>`;
+
+  for (let m = 0; m < numMeasures; m++) {
+    html += '<div class="measure">';
+    html += `<span class="measure-number">такт ${m + 1}</span>`;
+
+    for (let b = 0; b < beatsPerMeasure; b++) {
+      let pattern;
+      if (type === 'sixteenths') {
+        pattern = randomChoice(SIXTEENTHS);
+      } else if (type === 'triplets') {
+        pattern = randomChoice(TRIPLETS);
+      } else {
+        pattern = Math.random() < 0.5
+          ? randomChoice(SIXTEENTHS)
+          : randomChoice(TRIPLETS);
+      }
+      html += `<div class="beat-group">${createCells(pattern)}</div>`;
+    }
+
+    html += '</div>';
+    if (m < numMeasures - 1) {
+      html += '<div class="measure-divider"></div>';
+    }
+  }
+
+  html += `<div><button class="btn regenerate" onclick="regenerate('${type}')">↻ Обновить</button></div>`;
+
+  output.innerHTML = html;
+}
+
+function regenerate(type) {
+  generate(type);
+}
+
+// Initial render
+renderPatternGrid('sixteenths-grid', SIXTEENTHS);
+renderPatternGrid('triplets-grid', TRIPLETS);
+</script>
+
 </body>
 </html>
