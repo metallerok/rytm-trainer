@@ -260,7 +260,7 @@ function randomChoice(arr) {
 function generate(type) {
   const output = document.getElementById('output');
   const beatsPerMeasure = 4;
-  const numMeasures = 2;
+  const numMeasures = 1;
   let html = '';
   let label = '';
 
@@ -276,7 +276,6 @@ function generate(type) {
 
   for (let m = 0; m < numMeasures; m++) {
     html += '<div class="measure">';
-    html += `<span class="measure-number">такт ${m + 1}</span>`;
 
     for (let b = 0; b < beatsPerMeasure; b++) {
       let pattern;
