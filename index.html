@@ -249,7 +249,6 @@ function renderPatternGrid(gridId, patterns) {
   grid.innerHTML = patterns.map(p =>
     `<div class="pattern-card">
       <div class="pattern-cells">${createCells(p)}</div>
-      <div class="pattern-label">${p}</div>
     </div>`
   ).join('');
 }
